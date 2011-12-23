@@ -8,7 +8,7 @@ environments.
 
 Current Features
 ----------------
-* Press `Esc` to activate, if the line ends with 
+Press `<Esc>` to activate, if the line ends with 
 
     \begin{alphanumeric}
 
@@ -19,7 +19,7 @@ it will insert two new lines and
 Installation
 ============
 
-Simply copy `simplatex.plugin` and the folder `simplatex` to
+Simply copy `LatexBeginEnd.plugin` and the folder `LatexBeginEnd` to
 
     ~/.local/share/gedit/plugins
 
