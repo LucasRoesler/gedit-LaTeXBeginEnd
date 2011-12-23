@@ -1,0 +1,78 @@
+# -*- coding: utf-8 -*-
+
+# This file is part of the LaTeX Begin End plugin
+#
+# Copyright (C) 2011 Lucas David-Roesler
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public Licence as published by
+# the Free Software Foundation; either version 2 of the Licence, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public Licence for more details.
+#
+# You should have received a copy of the GNU General Public Licence along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
+
+from gi.repository import GObject, Gtk, Gdk, Gedit
+
+
+menu_str ="""
+<ui>
+  <menubar name="MenuBar">
+    <menu name="ToolsMenu" action="Tools">
+      <placeholder name="ToolsOps_3">
+        <menuitem name="CompleteBeginEnd" action="complete_begin_end"/>        
+      </placeholder>
+    </menu>
+  </menubar>
+</ui>
+"""
+
+class LatexBeginEnd(GObject.Object, Gedit.WindowActivatable):
+    __gtype_name__ = "LaTeXBeginEnd"
+    window = GObject.property(type=Gedit.Window)
+
+    def __init__(self):
+        GObject.Object.__init__(self)
+        
+    def do_activate(self):
+        self.insert_menu()
+
+    def insert_menu(self):
+        # Get the Gtk.UIManager
+        manager = self.window.get_ui_manager()
+
+        #Create a new action group
+        self._action_group = Gtk.ActionGroup(name="SimpleLaTeXActions")
+        self._action_group.add_actions([("complete_begin_end",None,
+                                         _("Complete BeginEnd block"),"<Alt>Esc",
+                                         _("Complete a LaTeX Begin/End block"),self.complete_begin_end))])
+        manager.insert_action_group(self._action_group,-1)
+
+        self._ui_id=manager.add_ui_from_file(self.plugin_info.get_data_dir() + "/menu.ui")
+
+
+    def get_current_line(self):
+        view = self.window.get_active_view()
+        doc     = self.window.get_active_document()
+        doc.begin_user_action()
+        itorig=doc.get_iter_at_mark(doc.get_insert())
+        offset=itorig.get_line_offset()
+        # GTK_MOVEMENT_PARAGRAPH_ENDS=6
+        if offset:
+                view.do_move_cursor(6,-1,0)
+        itstart = doc.get_iter_at_mark(doc.get_insert())
+        itend = doc.get_iter_at_mark(doc.get_insert())
+        itend.forward_line();
+        line = doc.get_slice(itstart, itend, True)
+        
+        return line
+        
+        
+    def complete_begin_end(self,action):
+        print get_current_line()
